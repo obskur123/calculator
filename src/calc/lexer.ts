@@ -1,6 +1,8 @@
 const TOKEN_TYPES = {
   number: "number",
   binop: "binop",
+  openParen: "openParen",
+  closeParen: "closeParen",
   eof: "eof",
 } as const;
 
@@ -31,7 +33,7 @@ function isSpace(c: string) {
 }
 
 function isBinOp(c: string) {
-  return c == "+" || c == "-"; //|| c == "*" || c == "%" || c == "/";
+  return c == "+" || c == "-" || c == "*" || c == "/";
 }
 
 function tokenize(src: string): Token[] {
@@ -49,6 +51,12 @@ function tokenize(src: string): Token[] {
       tkSrc.push(token(slptSrc.shift() as string, "binop"));
     } else if (isSpace(slptSrc[0])) {
       slptSrc.shift();
+    } else if (slptSrc[0] == "(") {
+      tkSrc.push(token(slptSrc.shift() as string, "openParen"))
+    } else if (slptSrc[0] == ")") {
+      tkSrc.push(token(slptSrc.shift() as string, "closeParen"))
+    } else {
+      throw new Error(`token invalido: "${slptSrc[0]}"`)
     }
   }
   tkSrc.push(token("eof", "eof"));

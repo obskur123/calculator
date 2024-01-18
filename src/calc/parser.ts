@@ -41,20 +41,11 @@ function parseExpr(src: Token[]): Expr {
   return parseAdditiveExpr(src);
 }
 
-function parseAdditiveExpr(src: Token[]): Expr {
-  let left = {
-    kind: "numericLiteral",
-    value: parseFloat(eat(src)!.value),
-  } as Expr;
-
-  while (at(src).value == "+" || at(src).value == "-") {
+function parseMultiplicativeExpr(src: Token[]) {
+  let left = parsePrimaryExpression(src);
+  while (at(src).value == "*" || at(src).value == "/") {
     const operator = eat(src)!.value;
-
-    const right = {
-      kind: "numericLiteral",
-      value: parseFloat(eat(src)!.value),
-    } as NumericLiteral;
-
+    const right = parsePrimaryExpression(src);
     left = {
       left,
       right,
@@ -62,8 +53,40 @@ function parseAdditiveExpr(src: Token[]): Expr {
       kind: "binaryExpr",
     } as BinaryExpr;
   }
-
   return left;
+}
+
+function parseAdditiveExpr(src: Token[]): Expr {
+  let left = parseMultiplicativeExpr(src);
+  while (at(src).value == "+" || at(src).value == "-") {
+    const operator = eat(src)!.value;
+    const right = parseMultiplicativeExpr(src);
+    left = {
+      left,
+      right,
+      operator,
+      kind: "binaryExpr",
+    } as BinaryExpr;
+  }
+  return left;
+}
+
+function parsePrimaryExpression(src: Token[]): Expr {
+  switch (at(src).type) {
+    case "number":
+      return {
+        kind: "numericLiteral",
+        value: parseFloat(eat(src)!.value),
+      } as NumericLiteral;
+    case "openParen": {
+      eat(src);
+      const value = parseAdditiveExpr(src);
+      eat(src);
+      return value;
+    }
+  }
+
+  return {} as Expr;
 }
 
 export { parse };

@@ -4,13 +4,23 @@ import { Expr, parse } from "./calc/parser";
 import { evaluate } from "./calc/interpreter";
 const input = ref("");
 
-function result(src: string) {
-  const res = evaluate(parse(src).body as Expr);
-  input.value = res.value.toString();
+function result() {
+
+  try {
+    const parsed = parse(input.value).body as Expr;
+    const res = evaluate(parsed);
+    input.value = res.value.toString();
+  } catch (err: any) {
+    alert(`ocurrio un error, ${err.message}`);
+  }
 }
 
-function parserResult(src: string) {
-  alert(JSON.stringify(parse(src), null, "\t"));
+function parserResult() {
+  try {
+    alert(JSON.stringify(parse(input.value), null, "\t"));
+  } catch (err: any) {
+    alert(`ocurrio un error, ${err.message}`);
+  }
 }
 </script>
 
@@ -19,8 +29,8 @@ function parserResult(src: string) {
     <div class="col">
       <div class="input-box">
         <input v-model="input" class="mb" type="text">
-        <button @click="() => result(input)" class="mb">resultado</button>
-        <button @click="() => parserResult(input)">resultado del parser</button>
+        <button @click="result" class="mb">resultado</button>
+        <button @click="parserResult">resultado del parser</button>
       </div>
       <div class="history-wrap">
       </div>

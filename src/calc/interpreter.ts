@@ -5,6 +5,10 @@ function evaluateNumExpr(a: number, b: number, c: string): NumericLiteral {
     return { kind: "numericLiteral", value: a + b } as NumericLiteral;
   } else if (c == "-") {
     return { kind: "numericLiteral", value: a - b } as NumericLiteral;
+  } else if (c == '*') {
+    return { kind: "numericLiteral", value: a * b } as NumericLiteral;
+  } else if (c == '/') {
+    return { kind: "numericLiteral", value: a / b } as NumericLiteral;
   }
   return {} as NumericLiteral;
 }
